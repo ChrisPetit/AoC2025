@@ -11,7 +11,6 @@ public static class Puzzle02
             var parts = line.Split("-");
             var start = long.Parse(parts[0]);
             var end = long.Parse(parts[1]);
-            var ids = new List<long>();
 
             for (var id = start; id <= end; id++)
             {
