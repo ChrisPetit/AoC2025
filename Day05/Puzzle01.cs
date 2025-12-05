@@ -1,5 +1,11 @@
 namespace Day05;
 
+/// <summary>
+/// 1. Parse ranges from the top section until the blank line.
+/// 2. Parse ingredient IDs from the bottom section.
+/// 3. Merge overlapping ranges so membership checks are fast.
+/// 4. For each ID, check if it lies within any merged range and count those.
+/// </summary>
 public static class Puzzle01
 {
     public static long Solve(string[] lines)

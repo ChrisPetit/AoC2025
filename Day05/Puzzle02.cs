@@ -1,5 +1,11 @@
 namespace Day05;
 
+/// <summary>
+/// 1. Read only the first section (before the blank line).
+/// 2. Parse each line as `start-end` into `long`.
+/// 3. Sort and merge overlapping/touching ranges.
+/// 4. For each merged range `[s, e]`, add `(e - s + 1)` to the total.
+/// </summary>
 public static class Puzzle02
 {
     public static long Solve(string[] lines)

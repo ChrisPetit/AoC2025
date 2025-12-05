@@ -1,5 +1,12 @@
 namespace Day03;
 
+/// <summary>
+/// 1. Track the best pair (best) as an int, initialized to -1.
+/// 2. For every index i, and every later index j > i:
+///     - Form pair = (line[i] - '0') * 10 + (line[j] - '0').
+///     - Update best = Math.Max(best, pair).
+/// 3. Add best to the running total.
+/// </summary>
 public static class Puzzle01
 {
     public static int Solve(string[] lines)

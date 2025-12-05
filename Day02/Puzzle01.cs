@@ -1,5 +1,13 @@
 namespace Day02;
 
+/// <summary>
+/// Calculates the sum of all `invalid ` IDs within the given ranges.
+/// A range is specified per line as `start-end`. For each ID in each range:
+/// - The ID is skipped if it has an odd number of digits.
+/// - If it has an even number of digits, the ID is split into two halves as strings.
+/// - If both halves are equal, the ID is considered invalid and added to a list.
+/// The method returns the sum of all invalid IDs.
+/// </summary>
 public static class Puzzle01
 {
     public static long Solve(string[] lines)

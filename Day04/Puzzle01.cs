@@ -1,5 +1,9 @@
 namespace Day04;
 
+/// <summary>
+/// Counts how many `@` cells in the grid have fewer than 4 neighboring `@` cells
+/// (considering all 8 surrounding positions) and returns that count.
+/// </summary>
 public static class Puzzle01
 {
     public static int Solve(string[]? lines)

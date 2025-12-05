@@ -1,5 +1,12 @@
 namespace Day02;
 
+/// <summary>
+/// For each input range, iterates through every numeric ID and checks its
+/// decimal representation to see if it can be split into equal-length
+/// segments where all segments are identical. Any ID that matches this
+/// repeated-segment pattern is collected as invalid, and the method returns
+/// the sum of all such invalid IDs.
+/// </summary>
 public static class Puzzle02
 {
     public static long Solve(string[] lines)

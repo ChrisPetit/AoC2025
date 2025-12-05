@@ -1,8 +1,13 @@
-using System;
-using System.Collections.Generic;
-
 namespace Day04;
 
+/// <summary>
+/// Simulates iterative removal of `@` cells from a grid:
+/// 1. Treat the input as a rectangular grid of characters.
+/// 2. In each round, find every cell containing `@` that has fewer than 4 neighboring `@` cells in its 8 surrounding positions (up, down, left, right, and diagonals).
+/// 3. Remove all such cells simultaneously by replacing them with.
+/// 4. Repeat steps 2-3 until no more `@` cells are removable in a round.
+/// 5. Return the total number of `@` cells removed across all rounds.
+/// </summary>
 public static class Puzzle02
 {
     public static int Solve(string[]? lines)

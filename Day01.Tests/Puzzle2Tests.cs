@@ -19,7 +19,7 @@ public class Puzzle2Tests
             "L82"
         };
         
-        var result = Puzzle2.Solve(input);
+        var result = Puzzle02.Solve(input);
         Assert.Equal(6, result);
     }
 }

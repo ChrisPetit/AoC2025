@@ -2,5 +2,5 @@
 
 var lines = File.ReadAllLines("input");
 
-Console.WriteLine(Puzzle1.Solve(lines));
-Console.WriteLine(Puzzle2.Solve(lines));
+Console.WriteLine(Puzzle01.Solve(lines));
+Console.WriteLine(Puzzle02.Solve(lines));
