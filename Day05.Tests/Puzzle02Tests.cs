@@ -7,10 +7,20 @@ public class Puzzle02Tests
     {
         var input = new[]
         {
-            ""
+            "3-5",
+            "10-14",
+            "16-20",
+            "12-18",
+            "",
+            "1",
+            "5",
+            "8",
+            "11",
+            "17",
+            "32"
         };
         
-        var result = Puzzle01.Solve(input);
-        Assert.Equal(0, result);
+        var result = Puzzle02.Solve(input);
+        Assert.Equal(14, result);
     }
 }
