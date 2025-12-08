@@ -1,7 +1,12 @@
 namespace Day06;
 
 /// <summary>
-/// 
+/// Processes a vertically aligned ASCII grid of arithmetic expressions by:
+/// - padding all input lines into a rectangular `char[,]` grid,
+/// - scanning columns to group non-blank columns into contiguous blocks,
+/// - for each block, delegating to `SolveBlock` to detect the operator and
+///   extract the numbers in that block, then computing the block's value,
+/// and finally returning the sum of all block results.
 /// </summary>
 public static class Puzzle01
 {
