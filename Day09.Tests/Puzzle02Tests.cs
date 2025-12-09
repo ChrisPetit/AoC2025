@@ -7,10 +7,17 @@ public class Puzzle02Tests
     {
         var input = new[]
         {
-            ""
+            "7,1",
+            "11,1",
+            "11,7",
+            "9,7",
+            "9,5",
+            "2,5",
+            "2,3",
+            "7,3"
         };
         
-        var result = Puzzle01.Solve(input);
-        Assert.Equal(0, result);
+        var result = Puzzle02.Solve(input);
+        Assert.Equal(24, result);
     }
 }
