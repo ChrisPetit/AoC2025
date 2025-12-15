@@ -136,22 +136,21 @@ public static class Puzzle02
 
         for (var i = 0; i < red.Count; i++)
         {
-            var start = red[i];
+            var (x, y) = red[i];
             var end = red[(i + 1) % red.Count];
 
-            if (start.X == end.X && start.Y == end.Y)
+            if (x == end.X && y == end.Y)
                 continue;
 
-            if (start.X != end.X && start.Y != end.Y)
+            if (x != end.X && y != end.Y)
                 throw new InvalidOperationException("Adjacent red tiles must align horizontally or vertically.");
 
-            if (start.X == end.X)
+            if (x == end.X)
             {
-                var x = start.X;
                 var colStart = xIndex[x];
                 var colEnd = xIndex[SafeOffset(x, 1)];
-                var minY = Math.Min(start.Y, end.Y);
-                var maxY = Math.Max(start.Y, end.Y);
+                var minY = Math.Min(y, end.Y);
+                var maxY = Math.Max(y, end.Y);
                 var rowStart = yIndex[minY];
                 var rowEnd = yIndex[SafeOffset(maxY, 1)];
                 for (var row = rowStart; row < rowEnd; row++)
@@ -162,11 +161,10 @@ public static class Puzzle02
             }
             else
             {
-                var y = start.Y;
                 var rowStart = yIndex[y];
                 var rowEnd = yIndex[SafeOffset(y, 1)];
-                var minX = Math.Min(start.X, end.X);
-                var maxX = Math.Max(start.X, end.X);
+                var minX = Math.Min(x, end.X);
+                var maxX = Math.Max(x, end.X);
                 var colStart = xIndex[minX];
                 var colEnd = xIndex[SafeOffset(maxX, 1)];
                 for (var row = rowStart; row < rowEnd; row++)
