@@ -7,10 +7,22 @@ public class Puzzle02Tests
     {
         var input = new[]
         {
-            ""
+            "svr: aaa bbb",
+            "aaa: fft",
+            "fft: ccc",
+            "bbb: tty",
+            "tty: ccc",
+            "ccc: ddd eee",
+            "ddd: hub",
+            "hub: fff",
+            "eee: dac",
+            "dac: fff",
+            "fff: ggg hhh",
+            "ggg: out",
+            "hhh: out"
         };
         
-        var result = Puzzle01.Solve(input);
-        Assert.Equal(0, result);
+        var result = Puzzle02.Solve(input);
+        Assert.Equal(2, result);
     }
 }
