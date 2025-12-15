@@ -7,10 +7,19 @@ public class Puzzle01Tests
     {
         var input = new[]
         {
-            ""
+            "aaa: you hhh",
+            "you: bbb ccc",
+            "bbb: ddd eee",
+            "ccc: ddd eee fff",
+            "ddd: ggg",
+            "eee: out",
+            "fff: out",
+            "ggg: out",
+            "hhh: ccc fff iii",
+            "iii: out"
         };
         
         var result = Puzzle01.Solve(input);
-        Assert.Equal(0, result);
+        Assert.Equal(5, result);
     }
 }
