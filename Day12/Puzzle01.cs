@@ -7,14 +7,13 @@ public static class Puzzle01
         var normalized = NormalizeLines(lines);
         var (shapes, regionStart) = ParseShapes(normalized);
         var regions = ParseRegions(normalized, regionStart, shapes.Count);
-
         return regions.LongCount(region => CanFitAll(region, shapes));
     }
 
     private static string[] NormalizeLines(string[]? lines)
     {
         if (lines == null)
-            return Array.Empty<string>();
+            return [];
 
         var result = new string[lines.Length];
         for (var i = 0; i < lines.Length; i++)
@@ -70,13 +69,9 @@ public static class Puzzle01
         }
 
         var ordered = shapes.OrderBy(s => s.Index).ToList();
-        for (var i = 0; i < ordered.Count; i++)
-        {
-            if (ordered[i].Index != i)
-                throw new InvalidOperationException("Shape indexes must be contiguous starting at 0.");
-        }
-
-        return (ordered, index);
+        return ordered.Where((t, i) => t.Index != i).Any()
+            ? throw new InvalidOperationException("Shape indexes must be contiguous starting at 0.")
+            : (ordered, index);
     }
 
     private static List<RegionRequest> ParseRegions(string[] lines, int startIndex, int shapeCount)
@@ -105,7 +100,7 @@ public static class Puzzle01
 
             var counts = parts.Length > 1
                 ? parts[1].Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                : Array.Empty<string>();
+                : [];
 
             if (counts.Length != shapeCount)
                 throw new InvalidOperationException("Region counts must match the number of shapes.");
@@ -134,17 +129,14 @@ public static class Puzzle01
         var regionCells = region.Width * region.Height;
         var shapeAreas = shapes.Select(s => s.Area).ToArray();
         var remainingArea = counts.Select((t, i) => t * shapeAreas[i]).Sum();
-
         if (remainingArea > regionCells)
             return false;
 
         var placementsByShape = BuildPlacements(shapes, region);
         if (counts.Where((t, i) => t > 0 && placementsByShape[i].Length == 0).Any())
-        {
             return false;
-        }
 
-        var board = new bool[regionCells];
+        var boardWords = new ulong[(regionCells + 63) / 64];
         var occupiedCells = 0;
 
         return Search(0, remainingArea);
@@ -168,18 +160,18 @@ public static class Puzzle01
                 var feasible = 0;
                 foreach (var placement in placementsByShape[i])
                 {
-                    if (CanPlace(placement, board))
-                    {
-                        feasible++;
-                        if (feasible >= bestCount)
-                            break;
-                    }
+                    if (!CanPlace(placement, boardWords)) continue;
+                    feasible++;
+                    if (feasible >= bestCount)
+                        break;
                 }
 
                 if (feasible == 0)
                     return false;
 
-                if (feasible >= bestCount) continue;
+                if (feasible >= bestCount)
+                    continue;
+
                 bestCount = feasible;
                 chosenShape = i;
             }
@@ -189,19 +181,19 @@ public static class Puzzle01
 
             foreach (var placement in placementsByShape[chosenShape])
             {
-                if (!CanPlace(placement, board))
+                if (!CanPlace(placement, boardWords))
                     continue;
 
-                ApplyPlacement(placement, board);
+                Apply(placement, boardWords);
                 counts[chosenShape]--;
-                occupiedCells += placement.Cells.Length;
+                occupiedCells += placement.CellCount;
 
-                if (Search(placedPieces + 1, areaNeeded - placement.Cells.Length))
+                if (Search(placedPieces + 1, areaNeeded - placement.CellCount))
                     return true;
 
-                occupiedCells -= placement.Cells.Length;
+                occupiedCells -= placement.CellCount;
                 counts[chosenShape]++;
-                RemovePlacement(placement, board);
+                Remove(placement, boardWords);
             }
 
             return false;
@@ -213,6 +205,8 @@ public static class Puzzle01
         var perShape = new List<Placement>[shapes.Count];
         for (var i = 0; i < perShape.Length; i++)
             perShape[i] = [];
+
+        var wordCount = (region.Width * region.Height + 63) / 64;
 
         for (var shapeIndex = 0; shapeIndex < shapes.Count; shapeIndex++)
         {
@@ -226,17 +220,16 @@ public static class Puzzle01
                 {
                     for (var offsetX = 0; offsetX <= region.Width - orientation.Width; offsetX++)
                     {
-                        var cells = new int[orientation.Cells.Length];
-                        for (var c = 0; c < orientation.Cells.Length; c++)
+                        var mask = new ulong[wordCount];
+                        foreach (var cell in orientation.Cells)
                         {
-                            var local = orientation.Cells[c];
-                            var absoluteX = offsetX + local.X;
-                            var absoluteY = offsetY + local.Y;
-                            cells[c] = absoluteY * region.Width + absoluteX;
+                            var absoluteX = offsetX + cell.X;
+                            var absoluteY = offsetY + cell.Y;
+                            var idx = absoluteY * region.Width + absoluteX;
+                            mask[idx >> 6] |= 1UL << (idx & 63);
                         }
 
-                        Array.Sort(cells);
-                        perShape[shapeIndex].Add(new Placement(cells));
+                        perShape[shapeIndex].Add(new Placement(mask, orientation.Cells.Length));
                     }
                 }
             }
@@ -248,21 +241,21 @@ public static class Puzzle01
         return result;
     }
 
-    private static bool CanPlace(Placement placement, bool[] board)
+    private static bool CanPlace(Placement placement, ulong[] board)
     {
-        return placement.Cells.All(cell => !board[cell]);
+        return !board.Where((t, i) => (t & placement.Mask[i]) != 0).Any();
     }
 
-    private static void ApplyPlacement(Placement placement, bool[] board)
+    private static void Apply(Placement placement, ulong[] board)
     {
-        foreach (var cell in placement.Cells)
-            board[cell] = true;
+        for (var i = 0; i < board.Length; i++)
+            board[i] |= placement.Mask[i];
     }
 
-    private static void RemovePlacement(Placement placement, bool[] board)
+    private static void Remove(Placement placement, ulong[] board)
     {
-        foreach (var cell in placement.Cells)
-            board[cell] = false;
+        for (var i = 0; i < board.Length; i++)
+            board[i] &= ~placement.Mask[i];
     }
 
     private static ShapeDefinition BuildShape(int index, IReadOnlyList<string> patternLines)
@@ -301,7 +294,9 @@ public static class Puzzle01
             }
         }
 
-        return !hasFilledCell ? throw new InvalidOperationException("Shapes must contain at least one `#`.") : Trim(grid);
+        return !hasFilledCell
+            ? throw new InvalidOperationException("Shapes must contain at least one `#`.")
+            : Trim(grid);
     }
 
     private static ShapeOrientation[] BuildOrientations(bool[,] baseGrid)
@@ -457,9 +452,10 @@ public static class Puzzle01
 
     private sealed record RegionRequest(int Width, int Height, int[] Counts);
 
-    private sealed class Placement(int[] cells)
+    private sealed class Placement(ulong[] mask, int cellCount)
     {
-        public int[] Cells { get; } = cells;
+        public ulong[] Mask { get; } = mask;
+        public int CellCount { get; } = cellCount;
     }
 
     private readonly record struct Point(int X, int Y);
